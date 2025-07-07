@@ -1,47 +1,44 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from sqlmodel import Session
-from app.models.state import State
 from app.schemas.state import StateCreate, StateRead, StateUpdate, StateStatusUpdate
 from app.db.database import get_db
-from app.crud.state import (create_state, 
-                            get_list_states, 
-                            update_state, 
-                            delete_state, 
-                            get_state_by_id, 
-                            get_list_states_by_status,
-                            update_state_status
-                            )
+
+from app.crud.state import crud_state
 
 state_router = APIRouter(prefix="/state", tags=["States"])
 
 @state_router.post("/", response_model=StateRead)
-def create_state_endpoint(state: StateCreate, db: Session = Depends(get_db)):
-    return create_state(db, state)
+def create_state(state: StateCreate, db: Session = Depends(get_db)):
+    return crud_state.create(db, state)
 
 @state_router.get("/", response_model=list[StateRead], summary="Get List State")
-def get_list_state_endpoint(db: Session = Depends(get_db)):
-    return get_list_states(db)
-
+def list_states(db: Session = Depends(get_db)):
+    return crud_state.get_all(db)
 
 @state_router.get("/status", response_model=list[StateRead], summary="Get List Of States By State")
-def get_list_states_by_status_endpoint(
-    is_active: bool = Query(True, description="Filtra por estados activos o inactivos"),
+def list_states_by_status(
+    is_active: bool = Query(True, description="Filter by active or inactive statuses"),
     db: Session = Depends(get_db)
 ):
-    return get_list_states_by_status(db, is_active)
+    return crud_state.get_all_by_status(db, is_active)
 
-@state_router.get("/{state_id}", response_model=StateRead, summary="Get State By Id")
-def get_state_by_id_endpoint(state_id: int, db: Session = Depends(get_db)):
-    return get_state_by_id(db, state_id)
+@state_router.get("/{state_id}", response_model=StateRead)
+def get_state_by_id(state_id: int, db: Session = Depends(get_db)):
+    return crud_state.get_by_id(db, state_id)
 
-@state_router.patch("/change-status/{state_id}", response_model=StateRead, summary="Cambiar estado de activación", description="Cambia solo el campo 'is_active' del estado indicado.")
-def change_state_status_endpoint(state_id: int, status_data: StateStatusUpdate, db: Session = Depends(get_db)):
-    return update_state_status(db, state_id, status_data)
+@state_router.patch("/change-status/{state_id}", response_model=StateRead, summary="Change activation status", description="Changes only the 'is_active' field of the indicated state.")
+def change_status(state_id: int, status: StateStatusUpdate, db: Session = Depends(get_db)):
+    return crud_state.update(db, state_id, status)
 
 @state_router.put("/{state_id}", response_model=StateRead, summary="Update State")
-def update_state_endpoint(state_id: int, state: StateUpdate, db: Session = Depends(get_db)):
-    return update_state(db, state_id, state)
+def update_state(state_id: int, state: StateUpdate, db: Session = Depends(get_db)):
+    return crud_state.update(db, state_id, state)
 
-@state_router.delete("/{state_id}", summary="Delete State")
-def delete_state_endpoint(state_id: int, db: Session = Depends(get_db)):
-    return delete_state(db, state_id)
+@state_router.delete("/{state_id}")
+def delete_state(state_id: int, db: Session = Depends(get_db)):
+    return crud_state.delete(db, state_id)
+
+@state_router.patch("/soft-delete/{state_id}")
+def soft_delete_state(state_id: int, db: Session = Depends(get_db)):
+    return crud_state.soft_delete(db, state_id)
+

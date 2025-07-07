@@ -1,21 +1,13 @@
-from sqlmodel import SQLModel, Field
-from typing import Optional
+from app.schemas.base import BaseCreate, BaseRead, BaseUpdate, BaseStatusUpdate
 
-class StateCreate(SQLModel):
-    name: str
-    description: str
-    is_active: bool
+class StateCreate(BaseCreate):
+    pass
     
-class StateRead(SQLModel):
-    id: int
-    name: str
-    description: str
-    is_active: bool
+class StateRead(BaseRead):
+    pass
     
-class StateUpdate(SQLModel):
-    name: Optional[str] = Field(default=None, max_length=50)
-    description: Optional[str] = Field(default=None, max_length=100)
-    is_active: Optional[bool] = None
+class StateUpdate(BaseUpdate):
+    pass
     
-class StateStatusUpdate(SQLModel):
-    is_active: bool = Field(..., description="New status for the state")
+class StateStatusUpdate(BaseStatusUpdate):
+    pass

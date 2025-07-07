@@ -1,7 +1,11 @@
 from sqlmodel import SQLModel, create_engine, Session
+from app.core.config_loader import settings
 
-DATABASE_URL = "sqlite:///komuna.db"
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+from app.models.state import State
+from app.models.gender import Gender
+
+DATABASE_URL = str(settings.SQLALCHEMY_DATABASE_URI)
+engine = create_engine(DATABASE_URL)
 SQLModel.metadata.create_all(engine)
 
 def get_db():

@@ -1,11 +1,11 @@
-from sqlmodel import SQLModel, Field
-from typing import Optional, TYPE_CHECKING
+from sqlmodel import SQLModel, Field, Relationship
+from app.models.base import Base
+from typing import Optional, TYPE_CHECKING, List
 
-# if TYPE_CHECKING:
-#     pass
+if TYPE_CHECKING:
+    from app.models.gender import Gender
 
-class State(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    name: Optional[str] = Field(max_length=30, unique=True, index=True)
-    description: Optional[str] = Field(default=None)
-    is_active: bool = Field(default=True)
+class State(Base, table=True):
+    pass
+    
+    # genders: List["Gender"] = Relationship(back_populates="state")
