@@ -4,6 +4,7 @@ from app.core.config_loader import settings
 from app.models.state import State
 from app.models.gender import Gender
 from app.models.marital_status import MaritalStatus
+from app.models.education_level import EducationLevel
 
 DATABASE_URL = str(settings.SQLALCHEMY_DATABASE_URI)
 engine = create_engine(DATABASE_URL)
